@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+SOL_HOME=/home/william/Pictures/Wall/sdo/0131
+EPOCH_FILE=$SOL_HOME/0131-$(date +%s).jpg
+
+remote_file="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_4096_0131.jpg"
+LATEST_LOCAL=$(ls -t "$SOL_HOME" | head -n1)
+local_file="/home/william/Pictures/Wall/sdo/0131/$LATEST_LOCAL"
+
+modified=$(curl --silent --head $remote_file |
+	awk '/^Last-Modified/{print $0}' |
+	sed 's/^Last-Modified: //')
+remote_ctime=$(date --date="$modified" +%s)
+local_ctime=$(stat -c %z "$local_file")
+local_ctime=$(date --date="$local_ctime" +%s)
+
+curltry() {
+	until curl -s --fail -o "$EPOCH_FILE" "$remote_file"; do
+		printf '.'
+		sleep 5
+	done
+}
+
+[ "$local_ctime" -lt "$remote_ctime" ] && curltry

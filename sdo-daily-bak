@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+set -x
+
+YESTERDAY=$(date +%Y%m%d --date="1 day ago")
+TODAY=$(date +%Y%m%d)
+DATE=$TODAY
+TARGET_PREFIX="https://sdo.gsfc.nasa.gov/assets/img/dailymov/movies_1080"
+LOCAL_CHAMBER="/tmp/sdo/daily"
+STAR_CHART=$(mktemp /tmp/starXXXXXXXXXX)
+
+mkdir -p "$LOCAL_CHAMBER"
+
+STAR_LIST=$(cat <<- EOF
+1080_HMIIC.mp4
+1080_HMIIF.mp4
+1080_HMIBC.mp4
+1080_HMID.mp4
+1080_HMII.mp4
+1080_HMIB.mp4
+1080_1700.mp4
+1080_1600.mp4
+1080_0335.mp4
+1080_0304.mp4
+1080_0211.mp4
+1080_0193.mp4
+1080_0171.mp4
+1080_0131.mp4
+1080_0094.mp4
+EOF
+)
+
+echo "$STAR_LIST" > "$STAR_CHART"
+
+while read line; do
+    STAR="$DATE"_$line
+    # checkLocalExists() {
+    #     if [[ -f "$LOCAL_CHAMBER"/"$STAR" ]]; then
+    #         echo "true"
+    #     else
+    #         echo "false"
+    #     fi
+    # }
+    CHKREMOTE=$(curl -o /dev/null --silent -Iw '%{http_code}' "$TARGET_PREFIX"/"$STAR")
+    getRemoteArtifact() {
+        wget -q -O "$LOCAL_CHAMBER"/"$STAR" "$TARGET_PREFIX"/"$STAR"
+    }
+    if [[ ! -f "$LOCAL_CHAMBER"/"$STAR" ]]; then
+    # if [[ checkLocalExists = false ]]; then
+        if [[ $CHKREMOTE = "200" ]]; then
+            getRemoteArtifact
+        else
+            DATE=$YESTERDAY
+            STAR="$DATE"_$line
+            if [[ ! -f "$LOCAL_CHAMBER"/"$STAR" ]]; then
+            # if [[ checkLocalExists = false ]]; then
+                if [[ $CHKREMOTE = "200%" ]]; then
+                    getRemoteArtifact
+                else
+                    echo "error"
+                fi
+            else
+                echo "Exists"
+            fi
+        fi
+    fi
+done < "$STAR_CHART"
+
+rm "$STAR_CHART"

@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+
+YESTERDAY=$(date +%Y%m%d --date="1 day ago")
+TODAY=$(date +%Y%m%d)
+TARGET_PREFIX="https://sdo.gsfc.nasa.gov/assets/img/dailymov/movies_1080"
+LOCAL_TEMP="/tmp/sdo/48"
+TARGET_ARRAY=$(mktemp /tmp/starXXXXXXXXXX)
+MUXLIST=$(mktemp /tmp/muxXXXXXXXXXX.txt)
+
+mkdir -p "$LOCAL_TEMP"
+
+TARGET_LIST=$(cat <<- EOF
+1700.mp4
+1600.mp4
+0304.mp4
+0211.mp4
+0193.mp4
+0171.mp4
+0131.mp4
+0094.mp4
+EOF
+)
+
+echo "$TARGET_LIST" > "$TARGET_ARRAY"
+
+while read -r ANGSTROM; do
+    echo "Fetching $ANGSTROM..."
+    LOCALT="$LOCAL_TEMP"/today_$ANGSTROM
+    LOCALY="$LOCAL_TEMP"/yesterday_$ANGSTROM
+
+    STAR="$TODAY"_1080_$ANGSTROM
+    wget -q -O "$LOCALT" "$TARGET_PREFIX"/"$STAR"
+    
+    STAR="$YESTERDAY"_1080_$ANGSTROM
+    wget -q -O "$LOCALY" "$TARGET_PREFIX"/"$STAR"
+    
+    echo "file $LOCALY" > "$MUXLIST"
+    echo "file $LOCALT" >> "$MUXLIST"
+    echo "Merging footage..."
+    ffmpeg -nostdin -loglevel error -f concat -safe 0 -i "$MUXLIST" -c copy $LOCAL_TEMP/last48_"$ANGSTROM"
+    rm "$LOCALT" "$LOCALY"
+done < "$TARGET_ARRAY"
+
+rm "$MUXLIST"
+rm "$TARGET_ARRAY"

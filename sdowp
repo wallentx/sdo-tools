@@ -1,0 +1,36 @@
+#!/bin/bash
+set -x
+killall xwinwrap > /dev/null 2>&1 
+# bspc rule -a mpv \
+#   -o 'state=floating' \
+#      'sticky=true' \
+#      'layer=below'
+
+xwinwrap -g 3840x1080 -ov -ni -- mpv		--fullscreen		--no-stop-screensaver		--loop		--no-audio		--no-border		--no-osc		--no-osd-bar		--no-input-default-bindings		--no-input-terminal		--no-input-cursor		--cursor-autohide=no		--speed='0.7'		--hwdec=vdapu --vo=vdpau --hwdec-codecs=all		--really-quiet		--no-config		--vo=tct		--wid=0		/tmp/sdo/daily/20210720_1080_0131.mp4
+
+#/tmp/sdo/daily/20210720_1080_0
+
+# bspc rule -a alacrittybg \
+#   -o 'state=floating' \
+#      'sticky=true' \
+#      'layer=below'
+
+# killall xwinwrap > /dev/null 2>&1 
+# xwinwrap -g 3840x1080+0+0 -ovr -ni -- mpv --fullscreen --no-stop-screensaver --loop --no-audio --no-border --no-osc --no-osd-bar --no-input-default-bindings -wid WID "$1" > /dev/null 2>&1 & echo $(readlink -f $1) > ~/.wall
+
+# xwinwrap \
+# 	-g 3840x1080 \
+# 	-ov -- \
+# ncplayer -q -s scale -b braille -d 1 -n \
+# 	/tmp/sdo/daily/20210720_1080_*
+
+# --fullscreen \
+# --no-stop-screensaver \
+# --loop \
+# --no-audio \
+# --no-border \
+# --no-osc \
+# --no-osd-bar \
+# --no-input-default-bindings \
+# -wid \
+# WID
