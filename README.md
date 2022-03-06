@@ -2,7 +2,11 @@
 Various scripts that scrape and compile Solar Dynamics Observatory data
 
 
-https://user-images.githubusercontent.com/8990544/156909735-9c9f044e-c780-46e0-9bc6-87d442eca10f.mp4
+
+
+https://user-images.githubusercontent.com/8990544/156910670-3d82c323-5830-471a-9459-8bdfbcabb39b.mp4
+
+
 
 
 https://photos.app.goo.gl/4yEUrP5W5mtWpW8B6
